@@ -12,40 +12,23 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
+
+  # target
   # config.vm.define "ubuntu-old" do |web|
   #   config.vm.box = "ubuntu/xenial64"
-  #   config.vm.hostname = "rack-old-ubuntu"
+  #   config.vm.hostname = "rack-ubuntu-old"
   # end
 
-  # config.vm.define "debian-testing" do |web|
-  config.vm.box = "generic/debian9"
-  config.vm.hostname = "rack-new-debian9"
+  # works
+  # config.vm.define "debian-stretch" do |web|
+  #   config.vm.box = "generic/debian9"
+  #   config.vm.hostname = "rack-debian-stretch"
   # end
 
-  # Disable automatic box update checking. If you disable this, then
-  # boxes will only be checked for updates when the user runs
-  # `vagrant box outdated`. This is not recommended.
-  # config.vm.box_check_update = false
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # NOTE: This will enable public access to the opened port
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine and only allow access
-  # via 127.0.0.1 to disable public access
-  # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
-
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
+  # config.vm.define "debian-buster" do |web|
+    config.vm.box = "fujimakishouten/debian-buster64"
+    config.vm.hostname = "rack-debian-buster"
+  # end
 
   # Share an additional folder to the guest VM. The first argument is
   # the path on the host to the actual folder. The second argument is
@@ -65,24 +48,28 @@ Vagrant.configure("2") do |config|
     vb.memory = "1024"
   end
 
+  config.ssh.extra_args = %W(-o AddKeysToAgent=yes)
+
   # View the documentation for the provider you are using for more
   # information on available options.
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-   config.vm.provision "shell", inline: <<-SHELL
-     add-apt-repository -y ppa:ubuntu-toolchain-r/test
-     apt-get update
-     apt-get upgrade -y
-     sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y &&
-      sudo apt-get update && sudo apt-get install gcc-snapshot -y &&
-      sudo apt-get update && sudo apt-get install gcc-7 g++-7 -y
-     apt-get install -y librtlsdr-dev git libx11-dev \
-      libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev \
-      libglu1-mesa-dev zlib1g-dev libasound2-dev libgtk2.0-dev unzip cmake \
-      libudev-dev libusb-dev bison flex protobuf-compiler  libprotobuf-c-dev \
-      libprotobuf-dev \
-      ;
-   SHELL
+ config.vm.provision "shell", inline: <<-SHELL
+   sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+   sudo apt-get update
+   sudo apt-get upgrade -y
+   sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y &&
+    sudo apt-get update && sudo apt-get install gcc-snapshot -y &&
+    sudo apt-get update && sudo apt-get install gcc-7 g++-7 -y
+   sudo apt-get install -y git libx11-dev \
+    libxrandr-dev libxinerama-dev libxcursor-dev libgl1-mesa-dev \
+    libglu1-mesa-dev zlib1g-dev libasound2-dev libgtk2.0-dev unzip zip cmake \
+    libudev-dev libusb-dev bison flex protobuf-compiler libspeexdsp1 libprotobuf-c-dev \
+    libprotobuf-dev \
+    xorg openbox \
+    ;
+    curl https://vcvrack.com/downloads/Rack-0.6.0-lin.zip -o ~vagrant/Rack-0.6.0-lin.zip
+ SHELL
 end
